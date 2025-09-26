@@ -7,17 +7,12 @@
 ```bash
 
 # 1. 패키지 설치
-
 npm  install
 
-
-
 # 2. 서버 실행
-
 node  server.js
 
 # 또는 nodemon 사용 시
-
 npx  nodemon  server.js
 ```
 
