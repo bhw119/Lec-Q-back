@@ -42,6 +42,8 @@ npx  nodemon  mock_server.js
 | name      | String                        | 이름          |
 | role      | Enum(`student`, `instructor`) | 사용자 역할   |
 | createdAt | Date (default: now)           | 생성일        |
+| PhoneNum  | String                        | 전화번호        |
+| Birth     | String                        | 생년월일        |
 
 ---
 
