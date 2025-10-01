@@ -25,10 +25,10 @@ npx  nodemon  app.js
 npm  install
 
 # 2. 서버 실행
-node app.js
+node mock_server.js
 
 # 또는 nodemon 사용 시
-npx  nodemon  app.js
+npx  nodemon  mock_server.js
 ```
 
 ## 🗄️ DB 구조 (MongoDB + Mongoose) - 추후 업데이트
