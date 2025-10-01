@@ -6,10 +6,18 @@ var logger = require("morgan");
 var cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./config/db");
+const mongoose = require("mongoose");
 
-// DB 연결
-connectDB();
+// .env에서 MONGO_URI 불러오기
+const MONGO_URI = process.env.MONGO_URI;
 
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
