@@ -2,7 +2,7 @@
 
 대규모 비대면 강의 환경에서 발생하는 교육적 격차를 해소하기 위한 AI 기반 실시간 학습 보조 플랫폼 Lec-Q BackEnd
 
-## How to Use
+## How to Use(Server)
 
 ```bash
 
@@ -10,10 +10,25 @@
 npm  install
 
 # 2. 서버 실행
-node  server.js
+cd lec-q_server
+node app.js
 
 # 또는 nodemon 사용 시
-npx  nodemon  server.js
+npx  nodemon  app.js
+```
+
+## How to Use(api 명세서)
+
+```bash
+
+# 1. 패키지 설치
+npm  install
+
+# 2. 서버 실행
+node app.js
+
+# 또는 nodemon 사용 시
+npx  nodemon  app.js
 ```
 
 ## 🗄️ DB 구조 (MongoDB + Mongoose) - 추후 업데이트
