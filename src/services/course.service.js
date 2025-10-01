@@ -27,3 +27,27 @@ exports.createCourse = ({ title, professor }) => {
     message: "강의 생성 성공(Mock)"
   };
 };
+
+// 교안 업로드 (Mock)
+exports.uploadMaterial = (lectureId, { filename, filetype, size }) => {
+  return {
+    lectureId,
+    materialId: Date.now().toString(),
+    filename: filename || 'material.pdf',
+    filetype: filetype || 'application/pdf',
+    size: size || 0,
+    uploadedAt: new Date().toISOString(),
+    message: '교안 업로드 성공(Mock)'
+  };
+};
+
+// 실시간 필기 데이터 수신/저장 (Mock)
+exports.receiveRealtimeNote = (lectureId, { userId, content, timestamp }) => {
+  return {
+    lectureId,
+    userId,
+    content,
+    timestamp: timestamp || new Date().toISOString(),
+    message: '실시간 노트 수신(Mock)'
+  };
+};

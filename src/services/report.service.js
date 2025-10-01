@@ -42,3 +42,12 @@ exports.updateUserReport = (userId, { progress, strengths, weaknesses, nextSteps
   };
 };
 
+// LLM 요약 생성 (스켈레톤)
+exports.generateLLMSummary = ({ lectureId, questions }) => {
+  return {
+    lectureId,
+    summary: "LLM이 생성한 요약(Mock)",
+    questionsCount: Array.isArray(questions) ? questions.length : 0
+  };
+};
+

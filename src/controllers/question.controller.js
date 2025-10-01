@@ -34,5 +34,29 @@ exports.getQuestionById = (req, res) => {
   res.json(result);
 };
 
+// 질문 Upvote
+exports.upvoteQuestion = (req, res) => {
+  const { questionId } = req.params;
+  const { userId } = req.body;
+  const result = questionService.upvoteQuestion(questionId, userId);
+  res.status(200).json(result);
+};
+
+// 강의자 답변 등록
+exports.answerByInstructor = (req, res) => {
+  const { questionId } = req.params;
+  const { instructorId, answer } = req.body;
+  const result = questionService.answerQuestionByInstructor(questionId, { instructorId, answer });
+  res.status(201).json(result);
+};
+
+// AI 답변 등록
+exports.answerByAI = (req, res) => {
+  const { questionId } = req.params;
+  const { model, answer } = req.body;
+  const result = questionService.answerQuestionByAI(questionId, { model, answer });
+  res.status(201).json(result);
+};
+
 
 

@@ -44,4 +44,43 @@ exports.getQuestionById = (questionId) => {
   return questions.find(q => q.questionId === questionId);
 };
 
+// 컨트롤러 정합성을 위한 별칭 함수
+exports.createQuestion = ({ lectureId, page, content, anonymous }) => {
+  return exports.addQuestion(lectureId, { page, content, anonymous });
+};
 
+exports.getQuestionsByLecture = (lectureId) => {
+  return exports.getQuestions(lectureId);
+};
+
+// 질문 Upvote (Mock)
+exports.upvoteQuestion = (questionId, userId) => {
+  return {
+    questionId,
+    upvotedBy: userId,
+    upvoteCount: 1,
+    message: "Upvote 반영(Mock)"
+  };
+};
+
+// 질문에 강의자 답변 등록 (Mock)
+exports.answerQuestionByInstructor = (questionId, { instructorId, answer }) => {
+  return {
+    questionId,
+    instructorId,
+    answer,
+    answeredAt: new Date().toISOString(),
+    message: "강의자 답변 등록(Mock)"
+  };
+};
+
+// 질문에 LLM 답변 등록 (Mock)
+exports.answerQuestionByAI = (questionId, { model, answer }) => {
+  return {
+    questionId,
+    model: model || "gpt-4o-mini",
+    answer,
+    answeredAt: new Date().toISOString(),
+    message: "AI 답변 등록(Mock)"
+  };
+};

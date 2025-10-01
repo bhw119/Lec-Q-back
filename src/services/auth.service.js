@@ -18,3 +18,12 @@ exports.login = ({ email, password }) => {
   };
 };
 
+
+// LLM 연동 테스트용 토큰 검증/발급 훅 (스켈레톤)
+exports.issueLLMServiceToken = ({ userId }) => {
+  return {
+    userId,
+    llmServiceToken: "mock_llm_service_token",
+    expiresIn: 3600
+  };
+};

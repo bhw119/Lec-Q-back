@@ -2,11 +2,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
 const uri =
   "mongodb+srv://bhw119:Qkrgusdn1!!@lec-q.116jn1m.mongodb.net/?retryWrites=true&w=majority&appName=Lec-Q";
 
 // === 기본 설정 ===
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
 const PORT = 8080;
 
 // 미들웨어
@@ -169,6 +173,26 @@ app.post("/api/reports", async (req, res) => {
 /* ======================
    📌 서버 실행
 ====================== */
-app.listen(PORT, () => {
+// === Socket.IO 설정 ===
+io.on("connection", (socket) => {
+  console.log("🟢 socket connected:", socket.id);
+
+  // 실시간 필기 이벤트 (스켈레톤)
+  socket.on("realtime_note:send", (payload) => {
+    // namespace/room 설계는 추후 합의
+    io.emit("realtime_note:broadcast", payload);
+  });
+
+  // 질문 upvote 이벤트 (스켈레톤)
+  socket.on("question:upvote", (payload) => {
+    io.emit("question:upvoted", payload);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 socket disconnected:", socket.id);
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`🚀 Lec-Q 서버가 ${PORT}번 포트에서 실행 중입니다.`);
 });

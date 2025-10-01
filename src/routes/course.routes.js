@@ -11,4 +11,10 @@ router.get('/:lectureId', courseController.getCourseById);
 // 강의 생성 (교수 전용)
 router.post('/', courseController.createCourse);
 
+// 교안 업로드 (스켈레톤)
+router.post('/:lectureId/materials', courseController.uploadMaterial);
+
+// 실시간 필기 데이터 전송 (스켈레톤)
+router.post('/:lectureId/realtime-notes', courseController.sendRealtimeNote);
+
 module.exports = router;
