@@ -143,6 +143,55 @@ paths:
                   status: { type: string }
                   description: { type: string }
 
+  /lectures/{lectureId}/upload:
+    post:
+      tags: [Lectures]
+      summary: PDF 교안 업로드 (교수 전용)
+      description: 강의 교안을 PDF 형식으로 업로드합니다.
+      parameters:
+        - name: lectureId
+          in: path
+          required: true
+          schema: { type: string }
+          description: 업로드할 강의의 ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                lectureFile:
+                  type: string
+                  format: binary
+                  description: 업로드할 PDF 파일
+      responses:
+        '200':
+          description: PDF 교안 업로드 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: PDF 교안이 성공적으로 업로드되었습니다.
+                  course:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 670c1a21a23b1b0a9c567ef1
+                      title:
+                        type: string
+                        example: 운영체제 핵심 개념 강의
+                      professor:
+                        type: string
+                        example: 박교수
+                      pdfUrl:
+                        type: string
+                        example: /uploads/1701234567890-os.pdf
+
   /lectures/{lectureId}/questions:
     post:
       tags: [Questions]

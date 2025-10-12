@@ -7,6 +7,8 @@ const { Server } = require("socket.io");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const swaggerDocument = YAML.load("./src/docs/openapi.yaml");
+const courseRoutes = require("./src/routes/course.routes");
+
 
 // ✅ 외부 모듈 불러오기
 const connectDB = require("./src/config/db");
@@ -22,12 +24,18 @@ const PORT = 8080;
 // Swagger UI 라우트 추가
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// ✅ 업로드된 PDF 파일 접근 허용
+const fs = require("fs");
+if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
+app.use("/uploads", express.static("uploads"));
+
 // === 미들웨어 ===
 app.use(cors());
 app.use(bodyParser.json());
 
 // ✅ Auth 라우트 등록 (Swagger 명세 기준)
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/lectures", courseRoutes);
 
 // === MongoDB 연결 ===
 connectDB();
@@ -198,4 +206,5 @@ io.on("connection", (socket) => {
 ====================== */
 server.listen(PORT, () => {
   console.log(`🚀 Lec-Q 서버가 ${PORT}번 포트에서 실행 중입니다.`);
+  console.log(`📘 Swagger 문서: http://localhost:${PORT}/api-docs`);
 });
