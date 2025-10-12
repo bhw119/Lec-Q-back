@@ -1,9 +1,9 @@
-const authService = require('../services/auth.service');
+const authService = require("../services/auth.service");
 
 // 회원가입
-exports.signup = (req, res) => {
+exports.signup = async (req, res) => {
   try {
-    const result = authService.signup(req.body);
+    const result = await authService.signup(req.body);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: "회원가입 실패", error: error.message });
@@ -11,13 +11,11 @@ exports.signup = (req, res) => {
 };
 
 // 로그인
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   try {
-    const result = authService.login(req.body);
+    const result = await authService.login(req.body);
     res.status(200).json(result);
   } catch (error) {
     res.status(401).json({ message: "로그인 실패", error: error.message });
   }
 };
-
-
