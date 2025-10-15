@@ -12,7 +12,7 @@ router.get('/:lectureId', courseController.getCourseById);
 router.post('/', courseController.createCourse);
 
 // 교안 업로드 (스켈레톤)
-router.post('/:lectureId/materials', courseController.uploadMaterial);
+router.post('/:lectureId/upload', courseController.uploadRealMaterial);
 
 // 실시간 필기 데이터 전송 (스켈레톤)
 router.post('/:lectureId/realtime-notes', courseController.sendRealtimeNote);

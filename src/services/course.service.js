@@ -1,3 +1,5 @@
+const Course = require('../models/course.model');
+
 // 강의 목록 조회
 exports.getCourses = () => {
   return [
@@ -17,14 +19,23 @@ exports.getCourseById = (lectureId) => {
   };
 };
 
-// 강의 생성
-exports.createCourse = ({ title, professor }) => {
-  return {
-    lectureId: Date.now().toString(),
+// MongoDB에 강의 생성
+exports.createCourse = async ({ title, professor }) => {
+  const newCourse = new Course({
     title,
     professor,
-    status: "ongoing",
-    message: "강의 생성 성공(Mock)"
+    status: 'ongoing',
+    description: `${title} 강의`
+  });
+
+  await newCourse.save();
+
+  return {
+    lectureId: newCourse._id,
+    title: newCourse.title,
+    professor: newCourse.professor,
+    status: newCourse.status,
+    message: '강의 생성 성공(DB 저장)'
   };
 };
 
@@ -50,4 +61,15 @@ exports.receiveRealtimeNote = (lectureId, { userId, content, timestamp }) => {
     timestamp: timestamp || new Date().toISOString(),
     message: '실시간 노트 수신(Mock)'
   };
+};
+
+// ✅ 실제 파일 업로드 후 DB에 반영
+exports.saveUploadedMaterial = async (lectureId, pdfUrl) => {
+  const course = await Course.findById(lectureId);
+  if (!course) throw new Error('해당 강의를 찾을 수 없습니다.');
+
+  course.pdfUrl = pdfUrl;
+  await course.save();
+
+  return course;
 };

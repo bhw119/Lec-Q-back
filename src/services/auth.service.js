@@ -11,6 +11,8 @@ exports.signup = ({ email, password, name, role, phoneNumber, birthDate }) => {
     userId: Date.now().toString(),
     email,
     name,
+    email,
+    password: hashedPassword,
     role,
     phoneNumber,
     birthDate,
@@ -37,12 +39,29 @@ exports.login = ({ email, password }) => {
   };
 };
 
+// 로그인
+exports.login = async ({ email, password }) => {
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("존재하지 않는 이메일입니다.");
 
-// LLM 연동 테스트용 토큰 검증/발급 훅 (스켈레톤)
-exports.issueLLMServiceToken = ({ userId }) => {
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new Error("비밀번호가 일치하지 않습니다.");
+
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    "lecq-secret-key",
+    { expiresIn: "1h" }
+  );
+
   return {
-    userId,
-    llmServiceToken: "mock_llm_service_token",
-    expiresIn: 3600
+    message: "로그인 성공",
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
   };
 };
+

@@ -1,4 +1,4 @@
-const authService = require('../services/auth.service');
+const authService = require("../services/auth.service");
 
 // ✅ 회원가입
 exports.signup = async (req, res) => {
