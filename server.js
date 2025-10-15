@@ -4,8 +4,14 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
-const uri =
-  "mongodb+srv://bhw119:Qkrgusdn1!!@lec-q.116jn1m.mongodb.net/?retryWrites=true&w=majority&appName=Lec-Q";
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDocument = YAML.load("./src/docs/openapi.yaml");
+
+// ✅ 외부 모듈 불러오기
+const connectDB = require("./src/config/db");
+const authRoutes = require("./src/routes/auth.routes");
+const User = require("./src/models/user.model");
 
 // === 기본 설정 ===
 const app = express();
@@ -13,32 +19,22 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const PORT = 8080;
 
-// 미들웨어
+// Swagger UI 라우트 추가
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// === 미들웨어 ===
 app.use(cors());
 app.use(bodyParser.json());
 
+// ✅ Auth 라우트 등록 (Swagger 명세 기준)
+app.use("/api/v1/auth", authRoutes);
+
 // === MongoDB 연결 ===
-mongoose
-  .connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+connectDB();
 
 /* ======================
-   📌 DB Schema 정의
+   📌 DB Schema 정의 (User는 이미 import 했으므로 제외)
 ====================== */
-
-// 1. 사용자(User)
-const userSchema = new mongoose.Schema({
-  email: { type: String, unique: true },
-  password: String,
-  name: String,
-  role: { type: String, enum: ["student", "instructor"], required: true },
-  createdAt: { type: Date, default: Date.now },
-});
-const User = mongoose.model("User", userSchema);
 
 // 2. 강의(Course)
 const courseSchema = new mongoose.Schema({
@@ -50,7 +46,8 @@ const courseSchema = new mongoose.Schema({
   materials: [String], // PDF 파일 경로 or GridFS ObjectId
   createdAt: { type: Date, default: Date.now },
 });
-const Course = mongoose.model("Course", courseSchema);
+const Course =
+  mongoose.models.Course || mongoose.model("Course", courseSchema);
 
 // 3. 질문(Question)
 const questionSchema = new mongoose.Schema({
@@ -64,7 +61,8 @@ const questionSchema = new mongoose.Schema({
   instructorAnswer: String,
   createdAt: { type: Date, default: Date.now },
 });
-const Question = mongoose.model("Question", questionSchema);
+const Question =
+  mongoose.models.Question || mongoose.model("Question", questionSchema);
 
 // 4. 리포트(Report)
 const reportSchema = new mongoose.Schema({
@@ -77,13 +75,19 @@ const reportSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
 });
-const Report = mongoose.model("Report", reportSchema);
+const Report =
+  mongoose.models.Report || mongoose.model("Report", reportSchema);
 
 /* ======================
-   📌 API 라우트 예시
+   📌 테스트 및 기존 API 유지
 ====================== */
 
-// --- 회원가입 ---
+// ✅ 기본 서버 상태 확인용
+app.get("/", (req, res) => {
+  res.send("✅ Lec-Q API Server Running");
+});
+
+// --- 회원가입 (기존 버전) ---
 app.post("/api/register", async (req, res) => {
   try {
     const { email, password, name, role } = req.body;
@@ -95,7 +99,7 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-// --- 로그인 (단순 버전) ---
+// --- 로그인 (기존 버전) ---
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email, password });
@@ -171,19 +175,15 @@ app.post("/api/reports", async (req, res) => {
 });
 
 /* ======================
-   📌 서버 실행
+   📌 Socket.IO 설정
 ====================== */
-// === Socket.IO 설정 ===
 io.on("connection", (socket) => {
   console.log("🟢 socket connected:", socket.id);
 
-  // 실시간 필기 이벤트 (스켈레톤)
   socket.on("realtime_note:send", (payload) => {
-    // namespace/room 설계는 추후 합의
     io.emit("realtime_note:broadcast", payload);
   });
 
-  // 질문 upvote 이벤트 (스켈레톤)
   socket.on("question:upvote", (payload) => {
     io.emit("question:upvoted", payload);
   });
@@ -193,6 +193,9 @@ io.on("connection", (socket) => {
   });
 });
 
+/* ======================
+   📌 서버 실행
+====================== */
 server.listen(PORT, () => {
   console.log(`🚀 Lec-Q 서버가 ${PORT}번 포트에서 실행 중입니다.`);
 });
